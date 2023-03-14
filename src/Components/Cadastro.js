@@ -1,61 +1,31 @@
-import React, { Component, PureComponent, useState } from "react";
-import { ScrollView, View, Text, Image, TouchableOpacity, AppRegistry, StyleSheet, Alert } from "react-native";
+import React, { Component } from "react";
+import { ScrollView, View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import { telaDeCadastrostilo, containerTelaCadastro, imagensCasas, textTelaDeCadastro, botao, camera } from '../stilos/estilos';
-
-// imports para uso de camera e acessar imagens no armazenamento
-import { launchCamera, launchImageLibrary, CameraOptions } from 'react-native-image-picker';
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
-import { RNCamera } from "react-native-camera";
-
-
-
-// importar a classe de seletor (Picker)
+import { telaDeCadastrostilo, containerTelaCadastro, textTelaDeCadastro, botao, camera } from '../style/estilos';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import SimplePicker from "./seletor";
-// model
 import imovel from "../model/imovel";
-
-// database
 import ItemDatabase from "../database/ItemDatabase";
-import { Button } from "@rneui/base";
-
-
-
-
-
-
-
-
-
-
-
 
 class Cadastro extends Component {
-
 
     constructor(props) {
         super(props)
         this.navigation = props.navigation
 
-        // menu dropDown tipo de imovel
         this.types = [
-            //{ label: 'Nenhum',       value: "Nenhum", },
+
             { label: 'Casa', value: "Casa", },
             { label: 'Comércio', value: 'Comercio', },
             { label: 'Condomínio', value: 'Condominio', },
         ]
 
-        // menu dropDown finalidade do imovel
         this.final = [
 
             { label: 'Alugar', value: 'Alugar', },
             { label: 'Vender', value: 'vender', },
         ]
 
-
-
-
-        // states
         this.state = {
 
             tipo: 'Casa',
@@ -67,38 +37,38 @@ class Cadastro extends Component {
 
         }
 
-
     }
 
     Cadastrar = (imageUser, tipo, endereco, finalidade, valor) => {
         const novoImovel = new imovel(imageUser, tipo, endereco, finalidade, valor);
         const DB = new ItemDatabase();
         DB.Inserir(novoImovel);
+        Alert.alert("Cadastro Concluído !", "Imóvel Cadastrado com sucesso!")
     }
 
     render() {
-        const imgCasa1 = require('../images/teste.jpg')
 
-        const handleImagemUser = () => { // cria um tipo de modal alert pra mim escolher dentro dele entre uma das opções
+        const handleImagemUser = () => {
+
             Alert.alert(
-                "selecione", "Escolha de onde selecionar a imagem",
+                "Selecionar", "Escolha como adicionar uma imagem.",
                 [
                     {
                         text: "Galeria",
-                        onPress: () => pickImageFromGalery(), // chama função que chama a galeria
+                        onPress: () => pickImageFromGalery(),
                         style: "default"
                     },
 
                     {
 
                         text: "Camera",
-                        onPress: () => pickImageFromCamera(), // chama a função que chama a camera
+                        onPress: () => pickImageFromCamera(),
                         style: "default"
                     },
 
                     {
                         text: "Cancelar",
-                        onPress: () => Alert.alert("Cancelado pelo usuario"),
+                        onPress: () => Alert.alert("Seleção de imagem cancelada!"),
                         style: "default",
                     },
 
@@ -111,23 +81,22 @@ class Cadastro extends Component {
             )
         }
 
-
         const pickImageFromCamera = async () => {
             const options = {
 
                 quality: 1,
-                saveToPhotos: true, // ativa o salvamento na galeria de imagems, se colocar false o salvamento das fotos passa a ser no cache
+                saveToPhotos: true,
 
             }
+
             const result = await launchCamera(options);
 
             if (result.assets) {
-                const img = result.assets[0].uri // pra pegar somente a uri
+                const img = result.assets[0].uri
                 console.log(JSON.stringify(img))
                 this.setState({ imageUser: img })
             }
         }
-
 
         const pickImageFromGalery = async () => {
 
@@ -136,8 +105,7 @@ class Cadastro extends Component {
 
             if (result.assets) {
 
-                const img = result.assets[0].uri // pra pegar somente a uri
-
+                const img = result.assets[0].uri
                 console.log(JSON.stringify(img))
 
                 this.setState({ imageUser: img })
@@ -149,38 +117,37 @@ class Cadastro extends Component {
             <ScrollView style={containerTelaCadastro.preenchimentoFundoScrollView}>
                 <View >
 
-                    <View><Text style={telaDeCadastrostilo.titulo}>Cadastro de imoveis</Text></View>
+                    <View><Text style={telaDeCadastrostilo.titulo}>Cadastro de imóveis</Text></View>
 
                     <View>
                         <TouchableOpacity onPress={() => handleImagemUser()} style={camera.capture}>
-                            <Text style={{ fontSize: 14, textAlign: 'center', fontWeight: 'bold', color: '#4b0082' }}> Click aqui e adicione uma Imagem ao anuncio </Text>
+                            <Text style={{ fontSize: 14, textAlign: 'center', fontWeight: 'bold', color: '#4b0082' }}> Adicionar imagem ao anúncio </Text>
                         </TouchableOpacity>
                     </View>
 
-                    {this.state.imageUser ? //  se imagem da camera foi capturada é verdadeiro, as caracteristicas de estilo em Image sera aplicada na imgem capturada para que ela seja exibida em uma previsualização na propria tela de cadastro e a mesma sera exibida antes de  salvar os dados
-                        <View style={{ borderWidth: 2, borderColor: 'white' }}>
+                    {this.state.imageUser ?
+                        <View style={{ borderWidth: 2, borderColor: 'white', marginTop: 10 }}>
                             <Image style={{ marginVertical: 10, alignSelf: 'center', width: '90%', height: 250 }} source={{ uri: this.state.imageUser }} />
-
                         </View>
-                        : // se não se a condição this.state.anuncio_image for falso, não havera alteração e continuara aparecendo o texto abaixo
-                        <Text style={{ textAlign: 'center', color: 'white', fontWeight: '700', margin: '2%', marginBottom: 50 }} >nenhuma imagem selecionada</Text>
+                        :
+                        <Text style={{ textAlign: 'center', fontStyle: 'italic', color: 'red', fontWeight: '700', margin: '2%', marginBottom: 50 }} >nenhuma imagem selecionada !</Text>
                     }
 
                     <View >
 
-                        <Text style={textTelaDeCadastro.textText}>Tipo de  imóveu</Text>
+                        <Text style={textTelaDeCadastro.textText}>Tipo de Imóvel</Text>
                         <SimplePicker onChange={(value) => this.setState({ tipo: value })} values={this.types} />
                     </View>
 
                     <View style={textTelaDeCadastro.viewEntradaDados} >
-                        <Text style={textTelaDeCadastro.textText}>Endereço do imóveu</Text>
+                        <Text style={textTelaDeCadastro.textText}>Endereço do Imóvel</Text>
                         <TextInput
                             onChangeText={(valorDigitado) => this.setState({ endereco: valorDigitado })}
                             style={textTelaDeCadastro.textTextImput}></TextInput>
                     </View>
 
                     <View style={{ marginTop: 20 }} >
-                        <Text style={textTelaDeCadastro.textText}>Finalidade do anuncio</Text>
+                        <Text style={textTelaDeCadastro.textText}>Finalidade do anúncio</Text>
                         <SimplePicker onChange={(value) => this.setState({ finalidade: value })} values={this.final} />
                     </View>
 
@@ -194,8 +161,7 @@ class Cadastro extends Component {
 
                     <View style={botao.viewBotao}>
                         <TouchableOpacity
-                            onPress={() => this.Cadastrar(this.state.tipo, this.state.endereco, this.state.finalidade, this.state.valor, this.state.imageUser)}
-                            style={botao.botaoCadastrar}>
+                            onPress={() => this.Cadastrar(this.state.tipo, this.state.endereco, this.state.finalidade, this.state.valor, this.state.imageUser)} style={botao.botaoCadastrar}>
                             <Text style={botao.textBotao}>Cadastrar</Text>
                         </TouchableOpacity>
 
@@ -211,10 +177,8 @@ class Cadastro extends Component {
         );
     }
 
-
-
 }
 
-export default Cadastro
+export default Cadastro;
 
 

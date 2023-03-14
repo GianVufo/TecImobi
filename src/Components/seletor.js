@@ -1,23 +1,23 @@
 import React, { Component } from 'react'
 import { Picker } from '@react-native-picker/picker';
 
-export class SimplePickerItem{
-    constructor(label, value){
+export class SimplePickerItem {
+    constructor(label, value) {
         this.label = label
         this.value = value
     }
 }
 
-export default class SimplePicker extends Component{
-    constructor(props){
+export default class SimplePicker extends Component {
+    constructor(props) {
         super(props)
         this.values = props.values
-        this.onChange = props.onChange ? props.onChange : (_a, _b)=>{}
+        this.onChange = props.onChange ? props.onChange : (_a, _b) => { }
         this.state = {
             value: props.initialValue ? props.initialValue : this.values[0].value
         }
     }
-    render(){
+    render() {
         return <Picker
             selectedValue={this.state.value}
             onValueChange={itemValue => {
